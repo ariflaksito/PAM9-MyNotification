@@ -1,0 +1,7 @@
+<resources>
+<string name="app_name">MyNotification</string>
+<string name="content_title">MyNotification Application</string>
+<string name="content_text">Good Mornig</string>
+<string name="subtext">Nice to see you</string>
+<string name="send_notif">Send Notif</string>
+</resources>
