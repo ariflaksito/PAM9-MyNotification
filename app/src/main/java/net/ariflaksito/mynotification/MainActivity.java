@@ -21,35 +21,58 @@ import static net.ariflaksito.mynotification.NotificationUtils.ANDROID_CHANNEL_I
 public class MainActivity extends AppCompatActivity {
 
     public static final int NOTIF_ID = 1;
+    PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://dicoding.com"));
+        pendingIntent = PendingIntent
+                .getActivity(MainActivity.this, 0, intent, 0);
+
         Button btn = (Button)findViewById(R.id.button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("http://dicoding.com"));
-                PendingIntent pendingIntent = PendingIntent
-                        .getActivity(MainActivity.this, 0, intent, 0);
-
-                NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(MainActivity.this)
-                        .setSmallIcon(R.drawable.ic_access_alarm_black_36dp)
-                        .setContentIntent(pendingIntent)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources()
-                                        , R.drawable.ic_access_alarm_black_36dp))
-                        .setContentTitle(getResources().getString(R.string.content_title))
-                        .setContentText(getResources().getString(R.string.content_text))
-                        .setSubText(getResources().getString(R.string.subtext))
-                        .setAutoCancel(true);
-
-                NotificationManagerCompat ncm = NotificationManagerCompat.from(getApplicationContext());
-                ncm.notify(NOTIF_ID, notifBuilder.build());
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    showNotifOreo();
+                else showNotifDefault();
             }
         });
 
+    }
+
+    public void showNotifDefault(){
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(MainActivity.this)
+                .setSmallIcon(R.drawable.ic_access_alarm_black_36dp)
+                .setContentIntent(pendingIntent)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources()
+                        , R.drawable.ic_access_alarm_black_36dp))
+                .setContentTitle(getResources().getString(R.string.content_title))
+                .setContentText(getResources().getString(R.string.content_text))
+                .setSubText(getResources().getString(R.string.subtext))
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notifManager = NotificationManagerCompat.from(getApplicationContext());
+        notifManager.notify(NOTIF_ID, notifBuilder.build());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void showNotifOreo(){
+        Notification.Builder notifBuilder = new Notification.Builder(MainActivity.this, ANDROID_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_access_alarm_black_36dp)
+                .setContentIntent(pendingIntent)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources()
+                        , R.drawable.ic_access_alarm_black_36dp))
+                .setContentTitle(getResources().getString(R.string.content_title))
+                .setContentText(getResources().getString(R.string.content_text))
+                .setSubText(getResources().getString(R.string.subtext))
+                .setAutoCancel(true);
+
+        NotificationUtils utils = new NotificationUtils(MainActivity.this);
+        utils.getManager().notify(NOTIF_ID, notifBuilder.build());
     }
 }
